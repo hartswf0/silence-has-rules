@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>SILENCE — An Interactive Lecture‑Performance (after John Cage)</title>
+  <meta name="description" content="Mobile‑first, single‑file presentation with diegetic audio interactions powered by WebAudio/Tone.js. No frameworks."/>
+  <style>
+    :root{
+      --bg:#0a0a0f;--panel:#0f1117;--ink:#e6f0ff;--muted:#9fb0c8;--ring:#2b3341;--hi:#46e2c2;--warn:#ffb44d;--edge:rgba(255,255,255,.06);
+      --btn:#1a1f29;--btn-hover:#232b38;--card:#0d0f14;--card-2:#10131a;--good:#6be3a1;--bad:#ff6b6b;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:radial-gradient(1200px 800px at 50% 60%, #0c0f15 0%, var(--bg) 60%);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial;}
+    .wrap{max-width:960px;margin-inline:auto;padding:20px 16px 80px}
+    header{position:sticky;top:0;background:linear-gradient(180deg, rgba(10,10,15,.9), rgba(10,10,15,.6) 60%, rgba(10,10,15,0));backdrop-filter:saturate(140%) blur(6px);z-index:10}
+    .bar{display:flex;align-items:center;justify-content:space-between;padding:12px 4px;border-bottom:1px solid var(--edge)}
+    .title h1{margin:0;font-weight:300;letter-spacing:.2em}
+    .subtitle{margin:2px 0 0;color:var(--muted);font-size:.9rem}
+    .controls{display:flex;gap:8px}
+    button{appearance:none;border:1px solid var(--ring);background:var(--btn);color:var(--ink);padding:10px 14px;border-radius:12px;cursor:pointer;transition:.2s;border-bottom:1px solid #000}
+    button:hover{background:var(--btn-hover)}
+    button[disabled]{opacity:.5;cursor:not-allowed}
+    .icon{width:18px;height:18px;display:inline-block;vertical-align:-3px;margin-right:6px}
+    .panel{background:linear-gradient(180deg, var(--panel), #0c0f14);border:1px solid var(--edge);border-radius:16px;padding:20px 16px}
+    .slide{min-height:440px;display:flex;flex-direction:column;justify-content:center}
+    h2{font-weight:300;letter-spacing:.12em;margin:0 0 10px}
+    .lead{font-size:1.15rem;line-height:1.7;color:#cfe0ff;margin:0 0 10px}
+    .sub{color:var(--muted);font-style:italic;margin:0 0 18px}
+    .card{background:linear-gradient(180deg, var(--card), var(--card-2));border:1px solid var(--edge);border-radius:14px;padding:16px}
+    .grid{display:grid;gap:10px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .progress{display:flex;gap:6px;align-items:center}
+    .dot{width:8px;height:8px;border-radius:50%;background:#2a3040}
+    .dot.on{background:#fff}
+    .nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid var(--edge)}
+    .kbd{font:600 12px/1 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;background:#0b0d12;border:1px solid var(--edge);padding:3px 6px;border-radius:6px;color:#bcd}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#101522;border:1px solid var(--edge);color:#bcd;font-size:.85rem}
+    .timer{font-variant-numeric:tabular-nums;font-size:2rem;letter-spacing:.1em;text-align:center}
+    .vis-circles{display:flex;align-items:center;justify-content:space-around}
+    .circle{width:70px;height:70px;border-radius:50%;background:#2a3242;display:flex;align-items:center;justify-content:center}
+    .sr{position:absolute;left:-9999px}
+    @media (max-width:520px){.g3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap bar">
+      <div class="title">
+        <h1>S I L E N C E</h1>
+        <p class="subtitle">Interactive lecture‑performance (after John Cage)</p>
+      </div>
+      <div class="controls">
+        <button id="audioBtn" title="Activate audio context"><span class="icon" aria-hidden="true">▶️</span>Audio</button>
+        <button id="muteBtn" title="Mute/Unmute"><span class="icon" aria-hidden="true">🔈</span>Mute</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="panel slide" id="slideArea" aria-live="polite"></section>
+    <div class="panel nav">
+      <button id="prevBtn">◀ Previous <span class="kbd">←</span></button>
+      <div class="progress" id="progress"></div>
+      <button id="nextBtn"><span class="kbd">→</span> Next ▶</button>
+    </div>
+    <p style="margin:14px 4px 0;color:#9cb0c8" class="sub">Tip: Use arrow keys or swipe. Most interactions give a gentle haptic tap and require audio to be activated first.</p>
+  </main>
+
+  <!-- Tone.js for expressive WebAudio (kept lightweight) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+  <script>
+  (function(){
+    // --- State ---
+    let currentSlide = 0;
+    let toneStarted = false;
+    let noiseActive = false;
+
+    // --- Tone graph ---
+    const synth = new Tone.PolySynth(Tone.Synth, {
+      oscillator:{type:'sine'},
+      envelope:{attack:2, decay:1, sustain:0.5, release:3}
+    });
+    const reverb = new Tone.Reverb({decay:6, wet:.25});
+    const noise = new Tone.Noise('pink');
+    const noiseGain = new Tone.Gain(0.12);
+    synth.chain(reverb, Tone.Destination);
+    noise.chain(noiseGain, reverb, Tone.Destination);
+
+    // Gentle master ceiling
+    const limiter = new Tone.Limiter(-3);
+    Tone.Destination.chain(limiter);
+
+    // --- Helpers ---
+    const $ = s=>document.querySelector(s);
+    const haptic = p=>{ try{ if(navigator.vibrate) navigator.vibrate(p||8);}catch{} };
+
+    async function startTone(){
+      if(!toneStarted){
+        await Tone.start();
+        toneStarted = true;
+        $('#audioBtn').innerHTML = '✅ Audio ready';
+        $('#audioBtn').disabled = true;
+        haptic();
+      }
+    }
+
+    function playChanceSound(){
+      const notes = ['C3','D3','E3','G3','A3','C4','D4','E4'];
+      const n = notes[Math.floor(Math.random()*notes.length)];
+      const dur = (Math.random()*3 + 0.5).toFixed(2);
+      synth.triggerAttackRelease(n, dur);
+    }
+
+    function toggleNoise(){
+      if(!toneStarted) return;
+      if(noiseActive){ noise.stop(); } else { noise.start(); }
+      noiseActive = !noiseActive;
+      const btn = document.getElementById('noiseBtn');
+      if(btn) btn.textContent = (noiseActive? 'Stop' : 'Generate')+ ' Environmental Noise';
+    }
+
+    function chord(notes, dur=2, gap=500){
+      notes.forEach((note,i)=> setTimeout(()=> synth.triggerAttackRelease(note, dur), i*gap));
+    }
+
+    function fmtTime(ms){
+      const s = Math.floor(ms/1000), m = Math.floor(s/60), r = s%60;
+      return `${String(m).padStart(1,'0')}:${String(r).padStart(2,'0')}`;
+    }
+
+    // --- Slides model ---
+    const slides = [
+      {
+        title:'SILENCE',
+        content:'A lecture‑performance by John Cage',
+        subtitle:'Wherever we are, what we hear is mostly noise. When we ignore it, it disturbs us. When we listen to it, we find it fascinating.'
+      },
+      {
+        title:'The Anechoic Chamber',
+        content:'I entered an anechoic chamber at Harvard University. I heard two sounds, one high and one low. The high one was my nervous system in operation. The low one was my blood in circulation.',
+        subtitle:'There is no such thing as silence.',
+        interactive:'internal'
+      },
+      {
+        title:'Noise → Music',
+        content:'Until I die there will be sounds. And they will continue following my death. One need not fear about the future of music.',
+        subtitle:'The transformation: Noise (disturbing) → Noise (fascinating)',
+        interactive:'noise'
+      },
+      {
+        title:'Chance Operations',
+        content:'I use the I‑Ching, coins, imperfections in paper. The composer becomes an inventor of genius, letting sounds be themselves.',
+        subtitle:'Intention/Control → Indeterminacy (unknown outcome)',
+        interactive:'chance'
+      },
+      {
+        title:'New Listening',
+        content:"Not an attempt to understand something that is being said... Just an attention to the activity of sounds.",
+        subtitle:"Listening for content → Listening for sounds' activity",
+        interactive:'now'
+      },
+      {
+        title:'Purposeful Purposelessness',
+        content:"What is the purpose of writing music? A purposeful purposelessness. This play is an affirmation of life— not an attempt to bring order out of chaos, but simply a way of waking up to the very life we're living.",
+        subtitle:'Art integrated into life\'s processes',
+        interactive:'space'
+      },
+      {
+        title:'The Apparatus',
+        content:'Prepared piano. Magnetic tape. Radios. Chance operations. Multiple loudspeakers. The anechoic chamber. Each thing has its own place, never takes the place of something else.',
+        subtitle:'Material → Human → Media → Environment',
+        interactive:'apparatus'
+      },
+      {
+        title:'4\'33"',
+        content:'My favorite piece. The performers don\'t play their instruments. The music is whatever happens during those four minutes and thirty‑three seconds.',
+        subtitle:"Composing's one thing, performing's another, listening's a third",
+        interactive:'433'
+      },
+      {
+        title:'Non‑Dualism',
+        content:'Subject/Object, Good/Evil, Music/Noise → Interpenetration, Oneness. There are no separate things. Everything belongs.',
+        subtitle:'An anarchistic ecology of sound',
+        interactive:'nondual'
+      },
+      {
+        title:'Waking Up',
+        content:"A way of waking up to the very life we're living, which is so excellent once one gets one's mind and one's desires out of its way and lets it act of its own accord.",
+        subtitle:'Thank you for listening. Now, continue listening.',
+        interactive:'final'
+      }
+    ];
+
+    // --- Renderers ---
+    function renderSlide(i){
+      const s = slides[i];
+      const area = $('#slideArea');
+      area.innerHTML = '';
+      const c = document.createElement('div');
+      c.innerHTML = `
+        <h2>${s.title}</h2>
+        <p class="lead">${s.content}</p>
+        <p class="sub">${s.subtitle}</p>
+      `;
+      area.appendChild(c);
+
+      if(s.interactive){
+        const box = document.createElement('div');
+        box.className='card';
+        box.appendChild(makeInteractive(s.interactive));
+        area.appendChild(box);
+      }
+
+      // progress
+      const prog = $('#progress');
+      prog.innerHTML = slides.map((_, idx)=>`<div class="dot ${idx===i?'on':''}" data-idx="${idx}"></div>`).join('');
+      prog.querySelectorAll('.dot').forEach(d=> d.addEventListener('click', e=>{ go(+e.target.dataset.idx); }));
+
+      // Persist
+      try{ localStorage.setItem('cage.silence.slide', String(i)); }catch{}
+    }
+
+    function makeInteractive(kind){
+      const wrap = document.createElement('div');
+      switch(kind){
+        case 'internal':{
+          const b = btn('Listen to Internal Sounds', ()=>{ startTone().then(()=> playChanceSound()); haptic(); });
+          wrap.append(b, psmall('Even in "silence," sounds persist'));
+          break;
+        }
+        case 'noise':{
+          const b = btn('Generate Environmental Noise', ()=>{ startTone().then(()=>{ toggleNoise(); haptic(); }); });
+          b.id='noiseBtn';
+          wrap.append(b, psmall('What we call noise is simply sound we haven\'t learned to hear'));
+          break;
+        }
+        case 'chance':{
+          const b = btn('Generate Chance Composition', ()=>{ startTone().then(()=>{ for(let i=0;i<5;i++){ setTimeout(()=>playChanceSound(), i*800);} haptic([10,40,10]); }); });
+          wrap.append(b, psmall('Each performance is unique, unrepeatable'));
+          break;
+        }
+        case 'now':{
+          const box = div(); box.className='grid g3';
+          ;['Your breath','Room ambience','Distant sounds'].forEach(t=>{ const d=div('card'); d.textContent=t; box.appendChild(d);});
+          wrap.append(box, psmall('The most important sounds are those you\'re already hearing'));
+          break;
+        }
+        case 'space':{
+          const box = div('grid g2');
+          ;['• Frequency','• Amplitude','• Timbre','• Duration','• Morphology','• Silence'].forEach(t=>{ const d=div('card'); d.textContent=t; box.appendChild(d);});
+          wrap.append(pspan('The Total Sound‑Space:'), box);
+          break;
+        }
+        case 'apparatus':{
+          const items=[
+            {t:'Material: film phonographs, synthesizers, tape', hue:'#1b6ef3'},
+            {t:'Human: listeners as fusion points', hue:'#46e2c2'},
+            {t:'Media: notation, I‑Ching, random numbers', hue:'#ffb44d'},
+            {t:'Environment: total sound‑space', hue:'#b07bff'}
+          ];
+          items.forEach(it=>{
+            const d=div('card'); d.style.borderColor='rgba(255,255,255,.08)'; d.style.boxShadow=`inset 0 0 0 1px ${it.hue}22`;
+            d.textContent=it.t; wrap.appendChild(d);
+          });
+          break;
+        }
+        case '433':{
+          const timer = div('timer'); timer.textContent='0:00';
+          const row = div(); row.style.display='flex'; row.style.gap='8px'; row.style.justifyContent='center'; row.style.flexWrap='wrap';
+          const start = btn('Start 4\'33"', ()=>{ start433(); haptic([8,40,8]); });
+          const stop = btn('Stop', ()=>{ stop433(); haptic(6); });
+          row.append(start, stop);
+          wrap.append(div('card').appendChild(document.createTextNode('[ ]'))?.parentElement||div(), psmall('In this space, listen to everything that is already happening'), timer, row);
+          // timer logic
+          let t0=null, raf=null, running=false;
+          function tick(ts){ if(!t0) t0=ts; const elapsed=ts-t0; timer.textContent = fmtTime(elapsed); if(running) raf=requestAnimationFrame(tick); }
+          function start433(){ if(!toneStarted) startTone(); Tone.Destination.mute = false; // keep path open
+            running=true; t0=null; raf=requestAnimationFrame(tick); }
+          function stop433(){ running=false; if(raf) cancelAnimationFrame(raf); }
+          // expose for buttons
+          wrap.start433 = start433; wrap.stop433 = stop433;
+          break;
+        }
+        case 'nondual':{
+          const v = div('vis-circles');
+          ['Sound','Silence','Noise'].forEach(label=>{ const c = div('circle'); c.textContent=''; const cap = document.createElement('p'); cap.style.textAlign='center'; cap.style.marginTop='8px'; cap.style.fontSize='.8rem'; cap.style.color='#b8c8dd'; const holder=div(); holder.append(c, cap); cap.textContent=label; v.appendChild(holder); });
+          const mid = document.createElement('div'); mid.textContent='⟷'; mid.style.fontSize='1.8rem'; mid.style.margin='0 8px';
+          v.children[0].after(mid.cloneNode(true)); v.children[1].after(mid.cloneNode(true));
+          wrap.append(v);
+          break;
+        }
+        case 'final':{
+          const b = btn('Final Sound', ()=>{ startTone().then(()=> chord(['C3','E3','G3','C4'],2,500)); haptic([10,50,10]); });
+          wrap.append(center(b), psmall('The lecture is over. The listening continues.'));
+          break;
+        }
+      }
+      return wrap;
+    }
+
+    // small DOM helpers
+    function btn(label, fn){ const b=document.createElement('button'); b.textContent=label; b.addEventListener('click', fn); return b; }
+    function psmall(t){ const p=document.createElement('p'); p.className='sub'; p.style.marginTop='10px'; p.textContent=t; return p; }
+    function pspan(t){ const p=document.createElement('p'); p.className='pill'; p.textContent=t; p.style.marginBottom='10px'; return p; }
+    function div(cls){ const d=document.createElement('div'); if(cls) d.className=cls; return d; }
+    function center(el){ const w=div(); w.style.textAlign='center'; w.appendChild(el); return w; }
+
+    // --- Navigation ---
+    function go(i){ currentSlide = Math.max(0, Math.min(slides.length-1, i)); renderSlide(currentSlide); updateNav(); }
+    function next(){ go(currentSlide+1); }
+    function prev(){ go(currentSlide-1); }
+    function updateNav(){ $('#prevBtn').disabled = currentSlide===0; $('#nextBtn').disabled = currentSlide===slides.length-1; }
+
+    // --- UI wiring ---
+    $('#audioBtn').addEventListener('click', startTone);
+    $('#muteBtn').addEventListener('click', ()=>{ Tone.Destination.mute = !Tone.Destination.mute; $('#muteBtn').innerHTML = (Tone.Destination.mute? '🔇 Unmute' : '🔈 Mute'); haptic(6); });
+    $('#nextBtn').addEventListener('click', ()=>{ next(); haptic(5);});
+    $('#prevBtn').addEventListener('click', ()=>{ prev(); haptic(5);});
+
+    // keyboard
+    window.addEventListener('keydown', e=>{ if(e.key==='ArrowRight') next(); if(e.key==='ArrowLeft') prev(); });
+
+    // swipe
+    let x0=null; window.addEventListener('touchstart', e=>{ x0 = e.changedTouches[0].clientX; }, {passive:true});
+    window.addEventListener('touchend', e=>{ if(x0===null) return; const dx = e.changedTouches[0].clientX - x0; if(Math.abs(dx)>40){ dx<0? next():prev(); } x0=null; }, {passive:true});
+
+    // restore slide
+    try{ const saved = +localStorage.getItem('cage.silence.slide'); if(Number.isFinite(saved)) currentSlide=saved; }catch{}
+
+    // initial render
+    renderSlide(currentSlide); updateNav();
+  })();
+  </script>
+</body>
+</html>
