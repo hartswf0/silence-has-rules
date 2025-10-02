@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Auditory-Linguistic Perceptual Loom</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --arrival-dark: #0a0e1a;
+            --arrival-fog: #1a2332;
+            --arrival-white: #e8e9ed;
+            --arrival-gray: #6b7280;
+            --arrival-accent: #4a5568;
+            --heptapod-glow: rgba(200, 210, 220, 0.15);
+        }
+        
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: var(--arrival-dark);
+            color: var(--arrival-white);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Heptapod circle animation */
+        .heptapod-circle {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 400px;
+            height: 400px;
+            transform: translate(-50%, -50%);
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .heptapod-circle svg {
+            width: 100%;
+            height: 100%;
+            animation: rotate 60s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            border-bottom: 1px solid var(--heptapod-glow);
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        nav a {
+            color: var(--arrival-gray);
+            text-decoration: none;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        
+        nav a:hover {
+            color: var(--arrival-white);
+        }
+        
+        /* Sections */
+        section {
+            min-height: 100vh;
+            padding: 6rem 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        h1, h2, h3 {
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            line-height: 1.2;
+            margin-bottom: 2rem;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+        
+        h2 {
+            font-size: 2rem;
+            color: var(--arrival-white);
+            border-left: 3px solid var(--arrival-white);
+            padding-left: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        h3 {
+            font-size: 1.3rem;
+            color: var(--arrival-gray);
+            margin-top: 2rem;
+        }
+        
+        p {
+            margin-bottom: 1.5rem;
+            color: var(--arrival-gray);
+            max-width: 800px;
+        }
+        
+        .quote-block {
+            background: var(--arrival-fog);
+            border-left: 4px solid var(--arrival-white);
+            padding: 2rem;
+            margin: 2rem 0;
+            font-style: italic;
+            position: relative;
+        }
+        
+        .quote-block::before {
+            content: '"';
+            font-size: 4rem;
+            position: absolute;
+            top: -1rem;
+            left: 1rem;
+            opacity: 0.3;
+            font-family: serif;
+        }
+        
+        .quote-author {
+            text-align: right;
+            margin-top: 1rem;
+            font-style: normal;
+            color: var(--arrival-white);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+        }
+        
+        /* Entity Grid */
+        .entity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .entity-card {
+            background: var(--arrival-fog);
+            padding: 1.5rem;
+            border: 1px solid var(--heptapod-glow);
+            transition: all 0.3s ease;
+        }
+        
+        .entity-card:hover {
+            border-color: var(--arrival-white);
+            transform: translateY(-5px);
+        }
+        
+        .entity-card h4 {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            color: var(--arrival-white);
+        }
+        
+        .entity-card p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        /* Morphism Flow */
+        .morphism {
+            background: var(--arrival-fog);
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 3px solid var(--arrival-accent);
+            position: relative;
+        }
+        
+        .morphism::before {
+            content: '→';
+            position: absolute;
+            left: -2.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: var(--arrival-accent);
+        }
+        
+        .morphism-title {
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--arrival-white);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .tension {
+            color: var(--arrival-gray);
+            font-style: italic;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--heptapod-glow);
+        }
+        
+        /* Apparatus Table */
+        .apparatus-section {
+            margin: 3rem 0;
+        }
+        
+        .apparatus-category {
+            margin: 2rem 0;
+        }
+        
+        .apparatus-category h4 {
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--arrival-white);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.9rem;
+        }
+        
+        .apparatus-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .apparatus-item {
+            background: var(--arrival-fog);
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--heptapod-glow);
+            font-size: 0.9rem;
+            color: var(--arrival-gray);
+        }
+        
+        /* Encoding/Decoding Table */
+        .encoding-table {
+            width: 100%;
+            margin: 2rem 0;
+            border-collapse: collapse;
+        }
+        
+        .encoding-table th,
+        .encoding-table td {
+            padding: 1rem;
+            text-align: left;
+            border: 1px solid var(--heptapod-glow);
+        }
+        
+        .encoding-table th {
+            background: var(--arrival-fog);
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.85rem;
+        }
+        
+        .encoding-table td {
+            color: var(--arrival-gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Diagram */
+        .diagram-container {
+            background: var(--arrival-fog);
+            padding: 3rem;
+            margin: 3rem 0;
+            border: 1px solid var(--heptapod-glow);
+            text-align: center;
+        }
+        
+        .loom-diagram {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .loom-svg {
+            width: 100%;
+            height: auto;
+        }
+        
+        /* Audio player styling */
+        .sound-example {
+            background: var(--arrival-fog);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--heptapod-glow);
+        }
+        
+        .sound-example h4 {
+            font-family: 'IBM Plex Mono', monospace;
+            margin-bottom: 1rem;
+            color: var(--arrival-white);
+            font-size: 0.9rem;
+        }
+        
+        audio {
+            width: 100%;
+            height: 40px;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--arrival-gray);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            border-top: 1px solid var(--heptapod-glow);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            nav ul { gap: 1rem; }
+            section { padding: 4rem 0; }
+            .container { padding: 1rem; }
+        }
+        
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Heptapod Circle -->
+    <div class="heptapod-circle">
+        <svg viewBox="0 0 400 400">
+            <circle cx="200" cy="200" r="180" fill="none" stroke="rgba(200, 210, 220, 0.2)" stroke-width="2"/>
+            <circle cx="200" cy="200" r="160" fill="none" stroke="rgba(200, 210, 220, 0.15)" stroke-width="1"/>
+            <circle cx="200" cy="200" r="140" fill="none" stroke="rgba(200, 210, 220, 0.1)" stroke-width="1"/>
+            <path d="M 200 20 Q 260 100 200 200 Q 140 100 200 20" fill="none" stroke="rgba(200, 210, 220, 0.1)" stroke-width="1"/>
+            <path d="M 380 200 Q 300 260 200 200 Q 300 140 380 200" fill="none" stroke="rgba(200, 210, 220, 0.1)" stroke-width="1"/>
+            <path d="M 200 380 Q 140 300 200 200 Q 260 300 200 380" fill="none" stroke="rgba(200, 210, 220, 0.1)" stroke-width="1"/>
+        </svg>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#intro">Introduction</a></li>
+            <li><a href="#entities">Entities</a></li>
+            <li><a href="#morphisms">Morphisms</a></li>
+            <li><a href="#apparatus">Apparatus</a></li>
+            <li><a href="#encoding">Encoding/Decoding</a></li>
+            <li><a href="#diagram">The Loom</a></li>
+            <li><a href="#stakes">Critical Stakes</a></li>
+        </ul>
+    </nav>
+
+    <!-- Introduction -->
+    <section id="intro">
+        <div class="container">
+            <h1 class="fade-in">The Auditory-Linguistic Perceptual Loom</h1>
+            <p class="fade-in" style="font-size: 1.2rem; color: var(--arrival-white); font-style: italic; max-width: 900px;">
+                A presentation on the Sapir-Whorf Hypothesis and the mediated nature of perception. 
+                <br>Dr. Louise Banks | Linguistic Field Notes | Shell Landing Site
+            </p>
+            
+            <div class="quote-block fade-in">
+                We see and hear and otherwise experience very largely as we do because the language habits of our community predispose certain choices of interpretation.
+                <div class="quote-author">— Edward Sapir, 1941</div>
+            </div>
+            
+            <p class="fade-in">
+                What you're about to witness challenges our fundamental understanding of perception. After my encounter with the heptapods, I realized that "hearing" and "seeing" are not raw receptions of an objective reality. They are processes deeply sculpted by the linguistic categories and cultural frameworks we inhabit.
+            </p>
+            
+            <p class="fade-in">
+                This presentation examines how language—particularly its sonic and structural dimensions—acts as a fundamental interface, shaping not just what we communicate, but what we can perceive, remember, and think.
+            </p>
+        </div>
+    </section>
+
+    <!-- Entities -->
+    <section id="entities">
+        <div class="container">
+            <h2 class="fade-in">I. Entities: The Actors in Our Linguistic Reality</h2>
+            
+            <h3 class="fade-in">Human Agents</h3>
+            <div class="entity-grid fade-in">
+                <div class="entity-card">
+                    <h4>Edward Sapir</h4>
+                    <p>Linguist who articulated the psychological reality of the phoneme—sounds that exist in the mind, not merely in the air.</p>
+                </div>
+                <div class="entity-card">
+                    <h4>Benjamin Lee Whorf</h4>
+                    <p>Extended Sapir's work to show how grammatical structures shape our perception of time, causality, and reality itself.</p>
+                </div>
+                <div class="entity-card">
+                    <h4>Eleanor Rosch</h4>
+                    <p>Challenged strong determinism with cross-cultural studies on color perception in the Dani tribe.</p>
+                </div>
+                <div class="entity-card">
+                    <h4>Bronislaw Malinowski</h4>
+                    <p>Ethnographer who revealed how oral traditions perform cultural work beyond semantic meaning.</p>
+                </div>
+            </div>
+            
+            <h3 class="fade-in">Conceptual Actors</h3>
+            <p class="fade-in">
+                Language, Thought, Reality, Perception (auditory, visual), Memory, Attention, Culture, Ideology, Linguistic Relativity, Linguistic Determinism, Counterfactuality, Categories, Labels, Stereotypes, Phoneme, Phonetic Symbolism, Universalism
+            </p>
+            
+            <h3 class="fade-in">Medium & Forces</h3>
+            <div class="entity-grid fade-in">
+                <div class="entity-card">
+                    <h4>Spoken Language</h4>
+                    <p>Subvocalized speech, overt utterances, oral instructions, magic formulas—the auditory codes that structure thought.</p>
+                </div>
+                <div class="entity-card">
+                    <h4>Written Language</h4>
+                    <p>Stories, descriptions, verbs, labels—visual manifestations of linguistic codes.</p>
+                </div>
+                <div class="entity-card">
+                    <h4>Grammatical Structures</h4>
+                    <p>Subjunctive moods, conditionals, verb tenses—the architecture of reasoning.</p>
+                </div>
+                <div class="entity-card">
+                    <h4>Sounds</h4>
+                    <p>Pure vowels, phonemes, acoustic input—the raw material transformed by linguistic interfaces.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Morphisms -->
+    <section id="morphisms">
+        <div class="container">
+            <h2 class="fade-in">II. Morphisms: Transformations of Reality</h2>
+            <p class="fade-in">These are the critical transformations where language acts as an interface, reshaping raw sensory input into conscious experience.</p>
+            
+            <div class="morphism fade-in">
+                <div class="morphism-title">Raw Acoustic Input → Cognitive Phoneme</div>
+                <p>Continuous sound spectrum transformed into discrete, language-specific phonemic units within the mind.</p>
+                <div class="tension">
+                    <strong>Tension:</strong> Objective acoustic reality vs. subjective, linguistically-constructed auditory perception. Sapir showed that speakers assert the existence of sounds that are not present, and deny the existence of sounds that are.
+                </div>
+            </div>
+            
+            <div class="morphism fade-in">
+                <div class="morphism-title">Pure Sound (Vowel) → Semantic Association</div>
+                <p>Inherent qualities of specific vowel sounds mapped onto abstract conceptual sizes (high vowels → small, low vowels → large).</p>
+                <div class="tension">
+                    <strong>Tension:</strong> Arbitrary linguistic assignment vs. psycho-acoustic symbolism in meaning-making.
+                </div>
+            </div>
+            
+            <div class="morphism fade-in">
+                <div class="morphism-title">Lexical Distinction → Perceptual Separation</div>
+                <p>A specific linguistic boundary distorts the continuous color spectrum, making speakers subjectively push apart hues near the boundary.</p>
+                <div class="tension">
+                    <strong>Tension:</strong> Continuous natural phenomena vs. discretized, linguistically-mediated perception.
+                </div>
+            </div>
+            
+            <div class="morphism fade-in">
+                <div class="morphism-title">Specific Verb → Altered Event Memory</div>
+                <p>Hearing a particular verb (e.g., "smashed" vs. "contacted") reconstructs and distorts the memory of a previously seen event.</p>
+                <div class="tension">
+                    <strong>Tension:</strong> Veracity of original visual perception vs. influential power of linguistic framing on recall. Loftus & Palmer showed subjects "recalled" broken glass that was never present.
+                </div>
+            </div>
+            
+            <div class="morphism fade-in">
+                <div class="morphism-title">Act of Verbalization → Impaired Visual Memory</div>
+                <p>Consciously describing a visual stimulus verbally interferes with or overwrites the original, more accurate visual memory.</p>
+                <div class="tension">
+                    <strong>Tension:</strong> Direct sensory access vs. linguistically biased recoding. We defer to language even when it degrades accuracy.
+                </div>
+            </div>
+            
+            <div class="morphism fade-in">
+                <div class="morphism-title">Grammatical Form → Ease of Counterfactual Thought</div>
+                <p>The presence of a clear grammatical marker (e.g., subjunctive) facilitates quicker or less effortful reasoning about hypothetical situations.</p>
+                <div class="tension">
+                    <strong>Tension:</strong> Universal cognitive capacity vs. language-specific cognitive efficiency.
+                </div>
+            </div>
+            
+            <div class="morphism fade-in">
+                <div class="morphism-title">Oral Magic Formula → Cultural Work/Belonging</div>
+                <p>Uttered sounds, even without clear semantic content, achieve social functions and reinforce communal bonds.</p>
+                <div class="tension">
+                    <strong>Tension:</strong> Semantic comprehensibility vs. functional/ritualistic efficacy of sound in building reality. Malinowski's Trobriand magic formulas cannot be translated but accomplish cultural work.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Apparatus -->
+    <section id="apparatus">
+        <div class="container">
+            <h2 class="fade-in">III. Apparatus Analysis: The Experimental Architecture</h2>
+            <p class="fade-in">How researchers construct interfaces to study linguistic mediation.</p>
+            
+            <div class="apparatus-section fade-in">
+                <div class="apparatus-category">
+                    <h4>Material Components</h4>
+                    <div class="apparatus-items">
+                        <div class="apparatus-item">Color chips (blue-green continuum)</div>
+                        <div class="apparatus-item">Ambiguous figures</div>
+                        <div class="apparatus-item">Films of traffic accidents</div>
+                        <div class="apparatus-item">Photographs from yearbooks</div>
+                        <div class="apparatus-item">Written questionnaires</div>
+                    </div>
+                </div>
+                
+                <div class="apparatus-category">
+                    <h4>Human Components</h4>
+                    <div class="apparatus-items">
+                        <div class="apparatus-item">English speakers</div>
+                        <div class="apparatus-item">Tarahumara speakers</div>
+                        <div class="apparatus-item">Dani tribe members</div>
+                        <div class="apparatus-item">Chinese monolinguals and bilinguals</div>
+                        <div class="apparatus-item">Four-year-olds</div>
+                        <div class="apparatus-item">Professional specialists (surgeons, mechanics)</div>
+                    </div>
+                </div>
+                
+                <div class="apparatus-category">
+                    <h4>Media Channels</h4>
+                    <div class="apparatus-items">
+                        <div class="apparatus-item">Oral/Aural signals (subvocalized speech, vowels, magic formulas)</div>
+                        <div class="apparatus-item">Lexical codes (color labels, verbs, personality terms)</div>
+                        <div class="apparatus-item">Grammatical codes (subjunctive, conditionals)</div>
+                        <div class="apparatus-item">Written channels (stories, descriptions, labels)</div>
+                    </div>
+                </div>
+                
+                <div class="apparatus-category">
+                    <h4>Environments</h4>
+                    <div class="apparatus-items">
+                        <div class="apparatus-item">Laboratory settings (controlled stimuli)</div>
+                        <div class="apparatus-item">Cultural contexts (Chinese, Trobriand, Hopi)</div>
+                        <div class="apparatus-item">Everyday life (day-to-day conversation)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Encoding/Decoding -->
+    <section id="encoding">
+        <div class="container">
+            <h2 class="fade-in">IV. Encoding vs. Decoding: The Linguistic Interface</h2>
+            <p class="fade-in">How language structures perception (encoding) and how audiences interpret those structures (decoding).</p>
+            
+            <table class="encoding-table fade-in">
+                <thead>
+                    <tr>
+                        <th>Aspect of Medium</th>
+                        <th>Encoding</th>
+                        <th>Decoding</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Phonemic System</strong></td>
+                        <td>A language's phonological rules encode which acoustic differences are perceptually salient.</td>
+                        <td>Individuals decode raw acoustic input based on their language's phonemic system, asserting or denying sounds based on linguistic categories.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Oral Magic Formulas</strong></td>
+                        <td>Ritualistic utterances encode social function through performative sound, not semantic content.</td>
+                        <td>Trobriand Islanders decode these for cultural work and communal belonging, not literal meaning.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Grammatical Counterfactuals</strong></td>
+                        <td>English grammar encodes clear distinction for contrary-to-fact reasoning (were/would).</td>
+                        <td>English speakers readily decode counterfactuals, making such reasoning efficient.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lack of Grammatical Counterfactuals</strong></td>
+                        <td>Chinese grammar encodes counterfactuals using ordinary if-then statements.</td>
+                        <td>Chinese speakers may struggle to decode contrary-to-fact meaning in certain contexts.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Verbs for Collision</strong></td>
+                        <td>Specific verbs encode different degrees of impact ("smashed" vs. "contacted").</td>
+                        <td>Subjects decode these verbs, reconstructing memories to include details never seen (broken glass).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Verbal Description Task</strong></td>
+                        <td>The act of describing encodes visual memory into linguistic representation.</td>
+                        <td>Subjects decode their own verbal recoding, impairing original visual memory accuracy.</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 class="fade-in">Signal vs. Noise</h3>
+            
+            <div class="entity-grid fade-in">
+                <div class="entity-card">
+                    <h4>Signal</h4>
+                    <p><strong>Linguistic Distinction:</strong> Clear differentiation through words or grammar (blue/green, subjunctive).</p>
+                    <p><strong>Idiomatic Language:</strong> Natural, culturally appropriate usage ensuring clear communication.</p>
+                    <p><strong>Functional Utterance:</strong> Ritualistic sounds that achieve social objectives beyond semantics.</p>
+                    <p><strong>Psycho-acoustic Symbolism:</strong> Non-arbitrary connections between sound and meaning.</p>
+                </div>
+                <div class="entity-card">
+                    <h4>Noise</h4>
+                    <p><strong>Absence of Distinction:</strong> Linguistic silence requiring more cognitive effort or causing ambiguity.</p>
+                    <p><strong>Methodological Flaws:</strong> Experimental designs that distort linguistic input (biased arrays, poor translations).</p>
+                    <p><strong>Verbally Biased Recoding:</strong> Language itself becomes noise, obscuring primary sensory signals.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Diagram -->
+    <section id="diagram">
+        <div class="container">
+            <h2 class="fade-in">V. The Auditory-Linguistic Perceptual Loom</h2>
+            <p class="fade-in">A diagrammatic schema showing how language weaves raw sensory flux into conscious reality.</p>
+            
+            <div class="diagram-container fade-in">
+                <div class="loom-diagram">
+                    <svg class="loom-svg" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Raw Flux -->
+                        <rect x="50" y="250" width="150" height="100" fill="none" stroke="#6b7280" stroke-width="2"/>
+                        <text x="125" y="290" text-anchor="middle" fill="#e8e9ed" font-size="14" font-family="IBM Plex Mono">RAW</text>
+                        <text x="125" y="310" text-anchor="middle" fill="#e8e9ed" font-size="14" font-family="IBM Plex Mono">AUDITORY/VISUAL</text>
+                        <text x="125" y="330" text-anchor="middle" fill="#e8e9ed" font-size="14" font-family="IBM Plex Mono">FLUX</text>
+                        
+                        <!-- Linguistic Loom (Central) -->
+                        <circle cx="400" cy="300" r="120" fill="none" stroke="#e8e9ed" stroke-width="3"/>
+                        <text x="400" y="295" text-anchor="middle" fill="#e8e9ed" font-size="16" font-family="IBM Plex Mono" font-weight="600">LINGUISTIC</text>
+                        <text x="400" y="315" text-anchor="middle" fill="#e8e9ed" font-size="16" font-family="IBM Plex Mono" font-weight="600">LOOM</text>
+                        
+                        <!-- Threaders (inside loom) -->
+                        <circle cx="360" cy="260" r="8" fill="#6b7280"/>
+                        <text x="340" y="250" fill="#6b7280" font-size="10" font-family="IBM Plex Mono">Phonemic</text>
+                        
+                        <circle cx="440" cy="260" r="8" fill="#6b7280"/>
+                        <text x="455" y="265" fill="#6b7280" font-size="10" font-family="IBM Plex Mono">Lexical</text>
+                        
+                        <circle cx="360" cy="340" r="8" fill="#6b7280"/>
+                        <text x="325" y="360" fill="#6b7280" font-size="10" font-family="IBM Plex Mono">Grammatical</text>
+                        
+                        <circle cx="440" cy="340" r="8" fill="#6b7280"/>
+                        <text x="445" y="360" fill="#6b7280" font-size="10" font-family="IBM Plex Mono">Oral Resonance</text>
+                        
+                        <!-- Arrows: Flux to Loom -->
+                        <path d="M 200 300 L 280 300" stroke="#e8e9ed" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- Perceptual Fabric (Right) -->
+                        <rect x="600" y="250" width="150" height="100" fill="none" stroke="#6b7280" stroke-width="2"/>
+                        <text x="675" y="290" text-anchor="middle" fill="#e8e9ed" font-size="14" font-family="IBM Plex Mono">PERCEPTUAL</text>
+                        <text x="675" y="310" text-anchor="middle" fill="#e8e9ed" font-size="14" font-family="IBM Plex Mono">FABRIC</text>
+                        <text x="675" y="330" text-anchor="middle" fill="#e8e9ed" font-size="14" font-family="IBM Plex Mono">(Conscious Reality)</text>
+                        
+                        <!-- Arrows: Loom to Fabric -->
+                        <path d="M 520 300 L 600 300" stroke="#e8e9ed" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- Cognitive Feedback Spool (Bottom) -->
+                        <ellipse cx="400" cy="500" rx="100" ry="40" fill="none" stroke="#6b7280" stroke-width="2"/>
+                        <text x="400" y="495" text-anchor="middle" fill="#e8e9ed" font-size="12" font-family="IBM Plex Mono">COGNITIVE</text>
+                        <text x="400" y="510" text-anchor="middle" fill="#e8e9ed" font-size="12" font-family="IBM Plex Mono">FEEDBACK SPOOL</text>
+                        
+                        <!-- Arrows: Fabric to Feedback -->
+                        <path d="M 675 350 L 675 450 L 500 500" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrowhead)" stroke-dasharray="5,5"/>
+                        
+                        <!-- Arrows: Feedback to Loom -->
+                        <path d="M 300 500 L 300 450 L 350 420" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrowhead)" stroke-dasharray="5,5"/>
+                        
+                        <!-- Arrow marker definition -->
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <polygon points="0 0, 10 3, 0 6" fill="#e8e9ed"/>
+                            </marker>
+                        </defs>
+                        
+                        <!-- Labels for arrows -->
+                        <text x="240" y="290" fill="#6b7280" font-size="11" font-family="IBM Plex Mono">weaving</text>
+                        <text x="560" y="290" fill="#6b7280" font-size="11" font-family="IBM Plex Mono">output</text>
+                        <text x="580" y="400" fill="#6b7280" font-size="11" font-family="IBM Plex Mono">experience</text>
+                        <text x="220" y="470" fill="#6b7280" font-size="11" font-family="IBM Plex Mono">shaping</text>
+                    </svg>
+                </div>
+                <p style="margin-top: 2rem; color: var(--arrival-gray); max-width: 700px; margin-left: auto; margin-right: auto;">
+                    The Linguistic Loom continuously transforms raw sensory flux into structured conscious experience. Phonemic, lexical, and grammatical "threaders" select, categorize, and weave specific patterns while discarding others. The resulting Perceptual Fabric—what we experience as reality—feeds back to reshape the loom itself through culture and thought.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Quotes -->
+    <section id="quotes" style="background: var(--arrival-fog);">
+        <div class="container">
+            <h2 class="fade-in">VI. Key Quotes & Their Impacts</h2>
+            
+            <div class="quote-block fade-in">
+                The psychological reality of the phoneme leads individuals to assert the existence of sounds that are not present, and deny the existence of sounds that are present.
+                <div class="quote-author">— Edward Sapir, 1933</div>
+            </div>
+            <p class="fade-in">
+                <strong>Impact:</strong> This powerfully demonstrates that our "listening" is not merely passive acoustic reception, but an active, internal linguistic interface that can override raw auditory data, revealing a profound construction of the soundscape within the mind.
+            </p>
+            
+            <div class="quote-block fade-in">
+                Magic formulas cannot really be translated... They do, however, accomplish cultural work within Trobriand society. They are therefore functionally situated.
+                <div class="quote-author">— Bronislaw Malinowski, 1935</div>
+            </div>
+            <p class="fade-in">
+                <strong>Impact:</strong> This expands the concept of "listening" beyond semantic decoding, asserting that the sound and utterance of oral traditions can serve as a potent interface for communal function and belonging, irrespective of explicit meaning.
+            </p>
+            
+            <div class="quote-block fade-in">
+                Subjects defer to the language information even when access to memories for the original information allows more accurate performance.
+                <div class="quote-author">— Schooler and Engstler-Schooler</div>
+            </div>
+            <p class="fade-in">
+                <strong>Impact:</strong> This critical finding highlights language as a dominant cognitive interface that can supplant direct sensory memory, revealing a powerful tendency for the linguistic representation of experience to override primary perceptual data, even to the detriment of accuracy.
+            </p>
+            
+            <div class="quote-block fade-in">
+                If this were so—and if we consider this putative result against the background of the limited cognitive resources available to cope with the time pressures of day-to-day conversation—we could imagine it to be the case that Chinese speakers would be less likely, all other things being equal, to undertake counterfactual thought. If this were true, language would be considered to have a clear influence on thought.
+                <div class="quote-author">— Gerrig & Banaji, 1994</div>
+            </div>
+            <p class="fade-in">
+                <strong>Impact:</strong> This speculation refines the understanding of linguistic influence, proposing that the ease and speed facilitated by a language's grammatical interface can subtly choreograph the frequency and depth of engaging in certain modes of thought within the sensory and social environment of daily conversation.
+            </p>
+        </div>
+    </section>
+
+    <!-- Critical Stakes -->
+    <section id="stakes">
+        <div class="container">
+            <h2 class="fade-in">VII. Critical Stakes: What This Demands of Us</h2>
+            
+            <h3 class="fade-in">What Counts as "Listening"?</h3>
+            <p class="fade-in">
+                This research demands that "listening" be understood as a deeply mediated, active, and constructive process rather than a passive auditory reception. Our linguistic system—including its phonemic structure and lexical distinctions—acts as a primary interface that pre-interprets and even distorts raw acoustic input. Furthermore, it expands listening to include the recognition of functional sounds that perform cultural work and forge belonging, irrespective of semantic content.
+            </p>
+            
+            <h3 class="fade-in">What Must We Attend To?</h3>
+            <p class="fade-in">
+                We must attend to the "language habits of our community" as the fundamental architecture of our sensory and cognitive world, particularly how oral and grammatical structures choreograph our perception. We are compelled to ignore the illusion of a universal, objective "soundscape" accessible outside of linguistic mediation.
+            </p>
+            
+            <p class="fade-in">
+                We must reframe silence not just as an absence of sound, but as a linguistic void where categories or distinctions are lacking, potentially leading to cognitive effort or even inability to easily conceive.
+            </p>
+            
+            <h3 class="fade-in">New Laws of Attention & Belonging</h3>
+            
+            <div class="entity-grid fade-in">
+                <div class="entity-card">
+                    <h4>Law of Linguistic Prioritization</h4>
+                    <p>We are predisposed to attend to and process sensory information along linguistically defined lines, often deferring to linguistic representations even when they contradict more accurate direct sensory memories.</p>
+                </div>
+                
+                <div class="entity-card">
+                    <h4>Law of Cognitive Ease/Cost</h4>
+                    <p>The efficiency (speed, effortlessness) of the linguistic interface directly influences the likelihood and ease with which certain thoughts or perceptions are engaged, making language a subtle choreographer of attention.</p>
+                </div>
+                
+                <div class="entity-card">
+                    <h4>Law of Functional Resonance</h4>
+                    <p>Beyond semantic understanding, communal belonging can be forged and reality affirmed through shared participation in oral traditions and the recognition of the functional power of sound, irrespective of explicit meaning.</p>
+                </div>
+            </div>
+            
+            <div class="quote-block fade-in" style="margin-top: 3rem; background: var(--arrival-dark); border-color: #4a5568;">
+                After working with the heptapods, I understood that their circular writing wasn't just a different way of expressing the same thoughts we have. It fundamentally restructured how they perceived time itself. Their language gave them access to a different reality—one where past, present, and future existed simultaneously. 
+                <br><br>
+                The Sapir-Whorf hypothesis isn't just an academic curiosity. It's the key to understanding that every language we speak opens certain doors of perception while closing others. To learn their language was to perceive as they perceive. To share their consciousness.
+                <div class="quote-author">— Dr. Louise Banks, Field Notes</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sound Examples -->
+    <section id="sounds" style="background: var(--arrival-fog);">
+        <div class="container">
+            <h2 class="fade-in">VIII. Sonic Interfaces: Examples of Phonetic Mediation</h2>
+            <p class="fade-in">These examples illustrate how sound itself carries meaning beyond arbitrary linguistic assignment.</p>
+            
+            <div class="sound-example fade-in">
+                <h4>Phonetic Symbolism: High Vowels vs. Low Vowels</h4>
+                <p style="color: var(--arrival-gray); margin-bottom: 1rem;">
+                    Research shows that high vowels (like /i/ in "teeny") are associated with smallness, while low vowels (like /a/ in "large") are associated with bigness. This is psycho-acoustic symbolism, not arbitrary assignment.
+                </p>
+                <audio controls>
+                    <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+                <p style="font-size: 0.85rem; color: var(--arrival-gray); margin-top: 0.5rem; font-style: italic;">
+                    Note: Audio example represents high-frequency tones (conceptual small) vs low-frequency resonance (conceptual large)
+                </p>
+            </div>
+            
+            <div class="sound-example fade-in">
+                <h4>Categorical Perception of Phonemes</h4>
+                <p style="color: var(--arrival-gray); margin-bottom: 1rem;">
+                    The boundary between /ba/ and /pa/ exists sharply in the minds of English speakers, even though the acoustic continuum is smooth. We hear discrete categories where nature provides continuity.
+                </p>
+                <audio controls>
+                    <source src="https://www.soundjay.com/button/sounds/button-3.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+                <p style="font-size: 0.85rem; color: var(--arrival-gray); margin-top: 0.5rem; font-style: italic;">
+                    Note: Represents the perceptual "click" where continuous sound becomes categorically distinct
+                </p>
+            </div>
+            
+            <div class="sound-example fade-in">
+                <h4>Heptapod Vocalization (Conceptual)</h4>
+                <p style="color: var(--arrival-gray); margin-bottom: 1rem;">
+                    The heptapods' spoken language was utterly unlike their written logographs. Their vocalizations contained layers of meaning we couldn't parse—until we learned to hear differently.
+                </p>
+                <audio controls>
+                    <source src="https://www.soundjay.com/misc/sounds/whoosh-1.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+                <p style="font-size: 0.85rem; color: var(--arrival-gray); margin-top: 0.5rem; font-style: italic;">
+                    Note: Atmospheric sound suggesting non-human linguistic resonance
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Conclusion -->
+    <section id="conclusion">
+        <div class="container">
+            <h2 class="fade-in">IX. Conclusion: Language as First Contact</h2>
+            
+            <p class="fade-in" style="font-size: 1.1rem; color: var(--arrival-white);">
+                The Sapir-Whorf hypothesis teaches us that every act of communication is an act of world-building. When we speak, we don't merely describe reality—we construct it. When we listen, we don't passively receive—we actively decode according to the linguistic apparatus we've inherited.
+            </p>
+            
+            <p class="fade-in">
+                My experience with the heptapods proved this beyond doubt. Learning their language didn't just give me new words; it gave me new eyes, new ears, a new temporal orientation. It restructured the very fabric of my consciousness.
+            </p>
+            
+            <p class="fade-in">
+                Every language is a first contact with a different way of being human—or in some cases, a different way of being entirely. The question is: Are we willing to be transformed by what we hear?
+            </p>
+            
+            <div class="quote-block fade-in" style="margin-top: 3rem;">
+                Language is the first weapon drawn in a conflict.
+                <div class="quote-author">— Colonel Weber</div>
+            </div>
+            
+            <div class="quote-block fade-in">
+                But it can also be the first door opened toward understanding.
+                <div class="quote-author">— Dr. Louise Banks</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>THE AUDITORY-LINGUISTIC PERCEPTUAL LOOM</p>
+            <p style="margin-top: 0.5rem;">A presentation on the Sapir-Whorf Hypothesis</p>
+            <p style="margin-top: 1rem; font-size: 0.75rem;">Linguistic Field Notes | Shell Landing Site | Classified</p>
+            <p style="margin-top: 2rem; font-size: 0.75rem; color: var(--arrival-accent);">
+                "If you could see your whole life from start to finish, would you change things?"
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Fade-in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Smooth scrolling for navigation
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+        
+        // Active navigation highlight
+        window.addEventListener('scroll', () => {
+            let current = '';
+            document.querySelectorAll('section').forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            document.querySelectorAll('nav a').forEach(link => {
+                link.style.color = 'var(--arrival-gray)';
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.style.color = 'var(--arrival-white)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
