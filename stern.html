@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Sensory World: Soundscapes, Orality, and Perception</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #e4e4e4;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1s ease-in;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00d4ff, #ff00ea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            margin: 40px 0 20px;
+            color: #00d4ff;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        h3 {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            margin: 30px 0 15px;
+            color: #ff00ea;
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            color: #a0a0a0;
+            font-style: italic;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .apparatus-card {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(255, 0, 234, 0.1));
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 12px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .sound-demo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .sound-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #00d4ff, #0088cc);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .sound-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5);
+            background: linear-gradient(135deg, #00ffff, #00aaff);
+        }
+
+        .sound-btn:active {
+            transform: translateY(0);
+        }
+
+        .sound-btn.playing {
+            background: linear-gradient(135deg, #ff00ea, #cc00bb);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 4px 15px rgba(255, 0, 234, 0.3); }
+            50% { box-shadow: 0 6px 25px rgba(255, 0, 234, 0.8); }
+        }
+
+        .quote-box {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 4px solid #ff00ea;
+            padding: 20px;
+            margin: 20px 0;
+            font-style: italic;
+            border-radius: 8px;
+        }
+
+        .entity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .entity-card {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .entity-card:hover {
+            background: rgba(0, 212, 255, 0.15);
+            border-color: #00d4ff;
+        }
+
+        .morphism-flow {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .morphism-item {
+            background: rgba(0, 212, 255, 0.2);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .arrow {
+            color: #ff00ea;
+            font-size: 1.5rem;
+            margin: 0 10px;
+        }
+
+        .interactive-diagram {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .layer {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 3px solid;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .layer:nth-child(1) { border-color: #4a9d3f; }
+        .layer:nth-child(2) { border-color: #ff6b6b; }
+        .layer:nth-child(3) { border-color: #4ecdc4; }
+        .layer:nth-child(4) { border-color: #ffe66d; }
+        .layer:nth-child(5) { border-color: #a8e6cf; }
+        .layer:nth-child(6) { border-color: #ff00ea; }
+
+        .layer:hover {
+            transform: translateX(10px);
+            box-shadow: -5px 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .tension-box {
+            background: linear-gradient(135deg, rgba(255, 0, 234, 0.1), rgba(0, 212, 255, 0.1));
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .visualization {
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .waveform {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wave-bar {
+            width: 4px;
+            background: linear-gradient(to top, #00d4ff, #ff00ea);
+            margin: 0 2px;
+            border-radius: 2px;
+            transition: height 0.1s ease;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .sound-demo {
+                flex-direction: column;
+            }
+
+            .sound-btn {
+                width: 100%;
+            }
+        }
+
+        .nav-dots {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot:hover, .nav-dot.active {
+            background: #00d4ff;
+            transform: scale(1.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-dots" id="navDots"></div>
+    
+    <div class="container">
+        <header>
+            <h1>The Sensory World</h1>
+            <p class="subtitle">Soundscapes, Orality, and Perception</p>
+            <p class="subtitle">An Interactive Exploration of Listening as Interface</p>
+        </header>
+
+        <section class="section" id="intro">
+            <h2>🎧 Introduction: Sound as Human Construction</h2>
+            <p>This presentation explores how sound, hearing, and listening are not natural phenomena but historically constructed practices shaped by technology, culture, and power.</p>
+            
+            <div class="quote-box">
+                <p>"Our most cherished pieties about sound-reproduction technologies—for instance, that they separated sounds from their sources or that sound recording allows us to hear the voices of the dead—were not and are not innocent empirical descriptions of the technologies' impact. They were wishes that people grafted onto sound-reproduction technologies—wishes that became programs for innovation and use."</p>
+            </div>
+
+            <div class="sound-demo">
+                <button class="sound-btn" onclick="playNaturalSound()">🌊 "Natural" Sound</button>
+                <button class="sound-btn" onclick="playConstructedSound()">🔧 Constructed Sound</button>
+                <button class="sound-btn" onclick="playMediatedSound()">📻 Mediated Sound</button>
+            </div>
+        </section>
+
+        <section class="section" id="entities">
+            <h2>👥 Key Entities & Actors</h2>
+            
+            <h3>Human Agents</h3>
+            <div class="entity-grid">
+                <div class="entity-card">
+                    <strong>Inventors & Scientists</strong>
+                    <p>Alexander Graham Bell, Edison, Berliner, Helmholtz</p>
+                </div>
+                <div class="entity-card">
+                    <strong>Medical Practitioners</strong>
+                    <p>Laennec (stethoscope inventor), physicians, diagnosticians</p>
+                </div>
+                <div class="entity-card">
+                    <strong>Telegraph Operators</strong>
+                    <p>Virtuoso listeners, self-made auditors</p>
+                </div>
+                <div class="entity-card">
+                    <strong>Ethnographers</strong>
+                    <p>Alice Fletcher, Frances Densmore, John Lomax</p>
+                </div>
+            </div>
+
+            <h3>Material Apparatuses</h3>
+            <div class="sound-demo">
+                <button class="sound-btn" onclick="playPhonautograph()">📝 Phonautograph</button>
+                <button class="sound-btn" onclick="playStethoscope()">🩺 Stethoscope</button>
+                <button class="sound-btn" onclick="playTelegraph()">📡 Telegraph</button>
+                <button class="sound-btn" onclick="playPhonograph()">📀 Phonograph</button>
+            </div>
+        </section>
+
+        <section class="section" id="morphisms">
+            <h2>🔄 Key Transformations (Morphisms)</h2>
+            
+            <div class="apparatus-card">
+                <h3>Sound Transformations</h3>
+                <div class="morphism-flow">
+                    <span class="morphism-item">Ephemeral Sound</span>
+                    <span class="arrow">→</span>
+                    <span class="morphism-item">Object of Thought</span>
+                    <span class="arrow">→</span>
+                    <span class="morphism-item">Measurable Commodity</span>
+                </div>
+                <div class="sound-demo">
+                    <button class="sound-btn" onclick="demonstrateTransformation()">🎵 Hear the Transformation</button>
+                </div>
+            </div>
+
+            <div class="apparatus-card">
+                <h3>Listening Transformations</h3>
+                <div class="morphism-flow">
+                    <span class="morphism-item">Passive Hearing</span>
+                    <span class="arrow">→</span>
+                    <span class="morphism-item">Active Listening</span>
+                    <span class="arrow">→</span>
+                    <span class="morphism-item">Technical Virtuosity</span>
+                </div>
+                <div class="sound-demo">
+                    <button class="sound-btn" onclick="playPassiveHearing()">👂 Passive</button>
+                    <button class="sound-btn" onclick="playActiveListening()">🎯 Active</button>
+                    <button class="sound-btn" onclick="playVirtuosity()">⭐ Virtuoso</button>
+                </div>
+            </div>
+
+            <div class="apparatus-card">
+                <h3>Acoustic Space Transformations</h3>
+                <div class="morphism-flow">
+                    <span class="morphism-item">Undifferentiated Space</span>
+                    <span class="arrow">→</span>
+                    <span class="morphism-item">Segmented Space</span>
+                    <span class="arrow">→</span>
+                    <span class="morphism-item">Private Acoustic Space</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="tensions">
+            <h2>⚡ Key Tensions</h2>
+            
+            <div class="tension-box">
+                <h3>Natural vs. Constructed</h3>
+                <p>Sound and senses are historically constructed rather than purely natural, challenging the nature/culture binary.</p>
+            </div>
+
+            <div class="tension-box">
+                <h3>Immediacy vs. Mediation</h3>
+                <p>"Immediacy" in sensory experience is often an effect of advanced mediation. "Unaided hearing" is deemed "insufficient."</p>
+                <div class="sound-demo">
+                    <button class="sound-btn" onclick="playUnmediated()">🎤 Unmediated</button>
+                    <button class="sound-btn" onclick="playMediated()">📞 Mediated</button>
+                </div>
+            </div>
+
+            <div class="tension-box">
+                <h3>Authenticity vs. Artifice</h3>
+                <p>"True fidelity" in sound reproduction is revealed as an aesthetic and ideological artifice, not objective capture.</p>
+            </div>
+
+            <div class="tension-box">
+                <h3>Signal vs. Noise</h3>
+                <p>The distinction between signal and noise shapes who belongs in the "audile community" and whose listening is privileged.</p>
+                <div class="sound-demo">
+                    <button class="sound-btn" onclick="playSignal()">✅ Signal</button>
+                    <button class="sound-btn" onclick="playNoise()">❌ Noise</button>
+                    <button class="sound-btn" onclick="playSignalInNoise()">🔍 Signal in Noise</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="apparatuses">
+            <h2>🔬 Apparatus Analysis</h2>
+            
+            <div class="apparatus-card">
+                <h3>1. The Stethoscope (Mediate Auscultation)</h3>
+                <p><strong>Function:</strong> Transforms patient's body into "sounding body," mediating physical and social distance between doctor and patient.</p>
+                <p><strong>Signal:</strong> Internal bodily sounds (heartbeat, respiration, pectoriloquy)</p>
+                <p><strong>Noise:</strong> External sounds, patient narrative, instrument vibrations</p>
+                <div class="sound-demo">
+                    <button class="sound-btn" onclick="playHeartbeat()">💓 Heartbeat</button>
+                    <button class="sound-btn" onclick="playRespiration()">🫁 Respiration</button>
+                    <button class="sound-btn" onclick="playDiagnostic()">🩺 Diagnostic Sound</button>
+                </div>
+            </div>
+
+            <div class="apparatus-card">
+                <h3>2. The Telegraph (Sound Telegraphy)</h3>
+                <p><strong>Function:</strong> Creates virtuoso listeners who extract signal from noise, transforming clicks into distant communication.</p>
+                <p><strong>Signal:</strong> Morse code clicks and dashes</p>
+                <p><strong>Noise:</strong> Cacophony of multiple machines in telegraph office</p>
+                <div class="sound-demo">
+                    <button class="sound-btn" onclick="playMorseCode()">📟 Morse Code</button>
+                    <button class="sound-btn" onclick="playTelegraphOffice()">🏢 Telegraph Office</button>
+                    <button class="sound-btn" onclick="playMorseInChaos()">🎯 Extract Signal</button>
+                </div>
+            </div>
+
+            <div class="apparatus-card">
+                <h3>3. The Phonograph (Sound Recording)</h3>
+                <p><strong>Function:</strong> Stores "use-time," creates "voices of the dead," transforms live performance into reproducible commodity.</p>
+                <p><strong>Signal:</strong> "Actual melody," tonal characteristics</p>
+                <p><strong>Noise:</strong> "Loud rushing noise," scratchy reproduction, mechanical hiss</p>
+                <div class="sound-demo">
+                    <button class="sound-btn" onclick="playVintageRecording()">📀 Vintage Recording</button>
+                    <button class="sound-btn" onclick="playScratchyPlayback()">📻 Scratchy Playback</button>
+                    <button class="sound-btn" onclick="playVoicesOfDead()">👻 Voices of the Dead</button>
+                </div>
+            </div>
+
+            <div class="apparatus-card">
+                <h3>4. The Radio</h3>
+                <p><strong>Function:</strong> Creates private acoustic spaces, enables "alone together" experience, broadcasts distant events.</p>
+                <p><strong>Signal:</strong> Clear station, music, speech</p>
+                <p><strong>Noise:</strong> Static, buzzing, "listeneritis"</p>
+                <div class="sound-demo">
+                    <button class="sound-btn" onclick="playRadioStation()">📻 Clear Station</button>
+                    <button class="sound-btn" onclick="playRadioStatic()">⚡ Static</button>
+                    <button class="sound-btn" onclick="playRadioTuning()">🔄 Tuning</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="diagram">
+            <h2>🗺️ The Layered Listening Interface</h2>
+            <p>An interactive conceptual model of mediated perception:</p>
+            
+            <div class="interactive-diagram">
+                <div class="layer" onclick="activateLayer(this, 0)">
+                    <strong>Layer 1: The Vibrating World</strong>
+                    <p>Chaotic, undulating base reality—sound and not-sound vibrations</p>
+                </div>
+                <div class="layer" onclick="activateLayer(this, 1)">
+                    <strong>Layer 2: The Ear/Body as Transducer</strong>
+                    <p>Human body parts as fixed points transforming vibrations to signals</p>
+                </div>
+                <div class="layer" onclick="activateLayer(this, 2)">
+                    <strong>Layer 3: Apparatuses/Machines</strong>
+                    <p>Technologies as frames and filters (stethoscope, telegraph, phonograph, radio)</p>
+                </div>
+                <div class="layer" onclick="activateLayer(this, 3)">
+                    <strong>Layer 4: The Network/Contextual Wires</strong>
+                    <p>Interconnected social, economic, and cultural relations</p>
+                </div>
+                <div class="layer" onclick="activateLayer(this, 4)">
+                    <strong>Layer 5: Audile Technique Overlay</strong>
+                    <p>Learned practices that highlight "signal" and blur "noise"</p>
+                </div>
+                <div class="layer" onclick="activateLayer(this, 5)">
+                    <strong>Layer 6: The Listener's Construction</strong>
+                    <p>Emergent meanings, interpretations, and mis-hearings</p>
+                </div>
+                <div class="visualization" id="layerViz"></div>
+            </div>
+        </section>
+
+        <section class="section" id="encoding">
+            <h2>🔐 Encoding/Decoding Pairs</h2>
+            
+            <div class="apparatus-card">
+                <h3>Stethoscope</h3>
+                <p><strong>Encoding:</strong> Frames "interior" sounds as diagnostic signals, excluding patient narrative</p>
+                <p><strong>Decoding:</strong> Physicians develop "audile technique" to interpret specific sounds, ignore instrument noise</p>
+            </div>
+
+            <div class="apparatus-card">
+                <h3>Telegraph</h3>
+                <p><strong>Encoding:</strong> Clicks and dashes as highly coded, limited information</p>
+                <p><strong>Decoding:</strong> Operators extract "signal" from "noise," imagine distant events and intimacy</p>
+            </div>
+
+            <div class="apparatus-card">
+                <h3>Phonograph</h3>
+                <p><strong>Encoding:</strong> Requires performers to modify acts for machine capture; recordings are "re-creations"</p>
+                <p><strong>Decoding:</strong> Listeners develop "faith in apparatus," perceive fidelity despite inherent characteristics</p>
+            </div>
+        </section>
+
+        <section class="section" id="quotes">
+            <h2>💬 Critical Quotes & Impacts</h2>
+            
+            <div class="quote-box">
+                <p>"My point is that human beings reside at the center of any meaningful definition of sound. When the hearing of other animals comes up, it is usually contrasted with human hearing (as in 'sounds that only a dog could hear'). As part of a larger physical phenomenon of vibration, sound is a product of the human senses and not a thing in the world apart from humans. Sound is a little piece of the vibrating world."</p>
+                <p><strong>Impact:</strong> Challenges sound as purely objective, asserting its anthropocentric and historically malleable nature.</p>
+            </div>
+
+            <div class="quote-box">
+                <p>"The locution machines to hear for them suggests a further implication of cultural attitudes about hearing, deafness, and states in between. Put simply, it puts the hearing body in analogical relief against the social body: sound reproduction came to be represented as a solution, not only to the physical fact of deafness or hardness of hearing, but, more important, to the social fact of unaided hearing."</p>
+                <p><strong>Impact:</strong> Reveals sound reproduction as addressing "unaided hearing" even for the fully abled, with the deaf serving as an implicit model.</p>
+            </div>
+
+            <div class="quote-box">
+                <p>"The operator focusing attention on his or her (although more likely his) instrument was not simply listening for a particular event in a confusing environment but listening for an event in the environment that corresponded with an event in Milwaukee, or Baltimore, or Chicago, or wherever. The noise in that Cleveland office was the noise of a network, the concentration of signals at a nodal point."</p>
+                <p><strong>Impact:</strong> Illustrates how audile technique transforms local "noise" into meaningful "signal" by reconfiguring acoustic space.</p>
+            </div>
+
+            <div class="quote-box">
+                <p>"The recordings were collected to 'preserve music, ritual, and languages that federal policy at the time of their recording had intended to drive into the ground within a generation.' The cylinder collections represent systematized cultural fragments solicited and preserved by one set of institutions while another set systematically destroyed the culture from which the fragments were taken."</p>
+                <p><strong>Impact:</strong> Exposes the ethical contradictions of ethnographic recording intertwined with colonial cultural destruction.</p>
+            </div>
+        </section>
+
+        <section class="section" id="stakes">
+            <h2>🎯 Critical Stakes</h2>
+            
+            <div class="apparatus-card">
+                <h3>Reshaping Listening</h3>
+                <p>Listening is radically reframed from a passive, universal sensory act to an active, historically contingent, culturally constructed technique ("audile technique"). Listening is a learned, disciplined practice, deeply intertwined with social, economic, and political forces.</p>
+            </div>
+
+            <div class="apparatus-card">
+                <h3>Attending to/Ignoring</h3>
+                <p>We must attend to the material, social, and ideological processes that frame and mediate sound. Certain sounds are valorized as "signal" while others are cast as "noise" and ignored. This distinction shapes power, truth, and belonging.</p>
+            </div>
+
+            <div class="apparatus-card">
+                <h3>Reframing Sound and the Body</h3>
+                <p>Sound is anthropocentric and historical, challenging the nature/culture binary. The human body is an artifact of history, subject to technical and social manipulation. The human voice is de-centered as the primary object of sound theory.</p>
+            </div>
+
+            <div class="apparatus-card">
+                <h3>New Laws of Attention</h3>
+                <p>Technologies impose new regimes of how and what we should listen to, choreographing our sensory experience and our place within modernity. They create distinct forms of individual and collective belonging in mediated acoustic spaces.</p>
+            </div>
+        </section>
+
+        <section class="section" id="conclusion">
+            <h2>🌟 Conclusion: The Politics of Listening</h2>
+            <p>This exploration reveals that listening is never neutral. Every act of listening is shaped by:</p>
+            <ul style="margin: 20px 0; line-height: 1.8;">
+                <li>The material apparatuses we use</li>
+                <li>The social contexts we inhabit</li>
+                <li>The power relations that determine what counts as "signal" vs "noise"</li>
+                <li>The historical wishes and desires grafted onto technologies</li>
+                <li>The disciplined techniques we learn and embody</li>
+            </ul>
+            
+            <div class="sound-demo">
+                <button class="sound-btn" onclick="playFinalSymphony()">🎼 Experience the Full Spectrum</button>
+            </div>
+
+            <div class="quote-box">
+                <p><em>"Sound is a little piece of the vibrating world"</em> — and how we listen to that piece shapes our reality, our relationships, and our power.</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Initialize Tone.js
+        let isAudioContextStarted = false;
+        const sounds = {};
+
+        function startAudioContext() {
+            if (!isAudioContextStarted) {
+                Tone.start();
+                isAudioContextStarted = true;
+            }
+        }
+
+        // Sound generators
+        function playNaturalSound() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.Synth({
+                oscillator: { type: 'sine' }
+            }).toDestination();
+            
+            synth.triggerAttackRelease('C4', '2n');
+            setTimeout(() => btn.classList.remove('playing'), 500);
+        }
+
+        function playConstructedSound() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.FMSynth().toDestination();
+            synth.triggerAttackRelease('E4', '4n');
+            setTimeout(() => btn.classList.remove('playing'), 500);
+        }
+
+        function playMediatedSound() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.AMSynth({
+                harmonicity: 3,
+                oscillator: { type: 'square' }
+            }).toDestination();
+            
+            const reverb = new Tone.Reverb(2).toDestination();
+            synth.connect(reverb);
+            synth.triggerAttackRelease('G4', '4n');
+            
+            setTimeout(() => btn.classList.remove('playing'), 1000);
+        }
+
+        function playPhonautograph() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const noise = new Tone.Noise('brown').toDestination();
+            const filter = new Tone.Filter(300, 'lowpass').toDestination();
+            noise.connect(filter);
+            
+            noise.start();
+            setTimeout(() => {
+                noise.stop();
+                btn.classList.remove('playing');
+            }, 800);
+        }
+
+        function playStethoscope() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.MembraneSynth().toDestination();
+            synth.triggerAttackRelease('C2', '8n');
+            
+            setTimeout(() => btn.classList.remove('playing'), 500);
+        }
+
+        function playTelegraph() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.Synth({
+                oscillator: { type: 'square' },
+                envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }
+            }).toDestination();
+            
+            const pattern = [0, 0.1, 0.2, 0.5, 0.6];
+            pattern.forEach(time => {
+                setTimeout(() => synth.triggerAttackRelease('A5', '32n'), time * 1000);
+            });
+            
+            setTimeout(() => btn.classList.remove('playing'), 800);
+        }
+
+        function playPhonograph() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.PolySynth().toDestination();
+            const noise = new Tone.Noise('pink').toDestination();
+            noise.volume.value = -20;
+            
+            noise.start();
+            synth.triggerAttackRelease(['C4', 'E4', 'G4'], '2n');
+            
+            setTimeout(() => {
+                noise.stop();
+                btn.classList.remove('playing');
+            }, 1000);
+        }
+
+        function demonstrateTransformation() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.Synth().toDestination();
+            
+            // Ephemeral
+            synth.triggerAttackRelease('C4', '8n', Tone.now());
+            
+            // Measurable
+            synth.triggerAttackRelease('E4', '8n', Tone.now() + 0.3);
+            
+            // Commodity
+            synth.triggerAttackRelease('G4', '4n', Tone.now() + 0.6);
+            
+            setTimeout(() => btn.classList.remove('playing'), 1500);
+        }
+
+        function playPassiveHearing() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.Synth({
+                oscillator: { type: 'sine' }
+            }).toDestination();
+            synth.volume.value = -10;
+            
+            synth.triggerAttackRelease('A3', '2n');
+            setTimeout(() => btn.classList.remove('playing'), 500);
+        }
+
+        function playActiveListening() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.Synth({
+                oscillator: { type: 'triangle' }
+            }).toDestination();
+            
+            const filter = new Tone.Filter(1000, 'bandpass').toDestination();
+            synth.connect(filter);
+            
+            synth.triggerAttackRelease('A4', '4n');
+            setTimeout(() => btn.classList.remove('playing'), 500);
+        }
+
+        function playVirtuosity() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.PolySynth().toDestination();
+            const notes = ['C5', 'D5', 'E5', 'G5', 'A5', 'C6'];
+            
+            notes.forEach((note, i) => {
+                setTimeout(() => synth.triggerAttackRelease(note, '16n'), i * 100);
+            });
+            
+            setTimeout(() => btn.classList.remove('playing'), 800);
+        }
+
+        function playUnmediated() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.Synth().toDestination();
+            synth.triggerAttackRelease('C4', '2n');
+            
+            setTimeout(() => btn.classList.remove('playing'), 500);
+        }
+
+        function playMediated() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.Synth().toDestination();
+            const reverb = new Tone.Reverb(1).toDestination();
+            const distortion = new Tone.Distortion(0.4).toDestination();
+            
+            synth.chain(distortion, reverb);
+            synth.triggerAttackRelease('C4', '2n');
+            
+            setTimeout(() => btn.classList.remove('playing'), 1000);
+        }
+
+        function playSignal() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.Synth({
+                oscillator: { type: 'sine' }
+            }).toDestination();
+            
+            synth.triggerAttackRelease('A4', '4n');
+            setTimeout(() => btn.classList.remove('playing'), 500);
+        }
+
+        function playNoise() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const noise = new Tone.Noise('white').toDestination();
+            noise.volume.value = -15;
+            
+            noise.start();
+            setTimeout(() => {
+                noise.stop();
+                btn.classList.remove('playing');
+            }, 500);
+        }
+
+        function playSignalInNoise() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.Synth().toDestination();
+            const noise = new Tone.Noise('white').toDestination();
+            noise.volume.value = -20;
+            
+            noise.start();
+            synth.triggerAttackRelease('A4', '2n');
+            
+            setTimeout(() => {
+                noise.stop();
+                btn.classList.remove('playing');
+            }, 1000);
+        }
+
+        function playHeartbeat() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.MembraneSynth().toDestination();
+            
+            for (let i = 0; i < 4; i++) {
+                setTimeout(() => {
+                    synth.triggerAttackRelease('C2', '16n');
+                    setTimeout(() => synth.triggerAttackRelease('C2', '32n'), 100);
+                }, i * 600);
+            }
+            
+            setTimeout(() => btn.classList.remove('playing'), 2400);
+        }
+
+        function playRespiration() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const noise = new Tone.Noise('pink').toDestination();
+            const filter = new Tone.Filter(500, 'lowpass').toDestination();
+            noise.connect(filter);
+            noise.volume.value = -15;
+            
+            noise.start();
+            
+            // Breathe in
+            filter.frequency.rampTo(800, 1.5);
+            
+            setTimeout(() => {
+                // Breathe out
+                filter.frequency.rampTo(300, 1.5);
+            }, 1500);
+            
+            setTimeout(() => {
+                noise.stop();
+                btn.classList.remove('playing');
+            }, 3000);
+        }
+
+        function playDiagnostic() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.NoiseSynth().toDestination();
+            
+            setTimeout(() => synth.triggerAttackRelease('16n'), 0);
+            setTimeout(() => synth.triggerAttackRelease('32n'), 200);
+            setTimeout(() => synth.triggerAttackRelease('16n'), 400);
+            
+            setTimeout(() => btn.classList.remove('playing'), 800);
+        }
+
+        function playMorseCode() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.Synth({
+                oscillator: { type: 'square' },
+                envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.05 }
+            }).toDestination();
+            
+            // SOS pattern
+            const pattern = [
+                { time: 0, duration: '32n' },
+                { time: 0.15, duration: '32n' },
+                { time: 0.3, duration: '32n' },
+                { time: 0.6, duration: '16n' },
+                { time: 0.9, duration: '16n' },
+                { time: 1.2, duration: '16n' },
+                { time: 1.6, duration: '32n' },
+                { time: 1.75, duration: '32n' },
+                { time: 1.9, duration: '32n' }
+            ];
+            
+            pattern.forEach(note => {
+                setTimeout(() => synth.triggerAttackRelease('A5', note.duration), note.time * 1000);
+            });
+            
+            setTimeout(() => btn.classList.remove('playing'), 2200);
+        }
+
+        function playTelegraphOffice() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth1 = new Tone.Synth({ oscillator: { type: 'square' } }).toDestination();
+            const synth2 = new Tone.Synth({ oscillator: { type: 'square' } }).toDestination();
+            const synth3 = new Tone.Synth({ oscillator: { type: 'square' } }).toDestination();
+            
+            synth1.volume.value = -10;
+            synth2.volume.value = -12;
+            synth3.volume.value = -14;
+            
+            // Multiple overlapping telegraph sounds
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    [synth1, synth2, synth3][Math.floor(Math.random() * 3)]
+                        .triggerAttackRelease(['A5', 'B5', 'C6'][Math.floor(Math.random() * 3)], '32n');
+                }, Math.random() * 1500);
+            }
+            
+            setTimeout(() => btn.classList.remove('playing'), 1800);
+        }
+
+        function playMorseInChaos() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            // Background chaos
+            const noise = new Tone.Noise('white').toDestination();
+            noise.volume.value = -25;
+            noise.start();
+            
+            // Clear signal
+            const synth = new Tone.Synth({
+                oscillator: { type: 'sine' }
+            }).toDestination();
+            
+            setTimeout(() => synth.triggerAttackRelease('A5', '8n'), 300);
+            setTimeout(() => synth.triggerAttackRelease('A5', '8n'), 600);
+            
+            setTimeout(() => {
+                noise.stop();
+                btn.classList.remove('playing');
+            }, 1200);
+        }
+
+        function playVintageRecording() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.PolySynth().toDestination();
+            const noise = new Tone.Noise('brown').toDestination();
+            const filter = new Tone.Filter(2000, 'lowpass').toDestination();
+            
+            synth.connect(filter);
+            noise.volume.value = -25;
+            
+            noise.start();
+            synth.triggerAttackRelease(['C4', 'E4', 'G4', 'B4'], '2n');
+            
+            setTimeout(() => {
+                noise.stop();
+                btn.classList.remove('playing');
+            }, 1000);
+        }
+
+        function playScratchyPlayback() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.Synth().toDestination();
+            const noise = new Tone.Noise('white').toDestination();
+            const lfo = new Tone.LFO('8n', -30, -15);
+            
+            lfo.connect(noise.volume);
+            lfo.start();
+            noise.start();
+            
+            synth.triggerAttackRelease('A4', '2n');
+            
+            setTimeout(() => {
+                noise.stop();
+                lfo.stop();
+                btn.classList.remove('playing');
+            }, 1000);
+        }
+
+        function playVoicesOfDead() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.Synth().toDestination();
+            const reverb = new Tone.Reverb(4).toDestination();
+            const tremolo = new Tone.Tremolo(4, 0.5).toDestination();
+            
+            synth.chain(tremolo, reverb);
+            tremolo.start();
+            
+            synth.triggerAttackRelease('C3', '1n');
+            
+            setTimeout(() => {
+                tremolo.stop();
+                btn.classList.remove('playing');
+            }, 2000);
+        }
+
+        function playRadioStation() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth = new Tone.PolySynth().toDestination();
+            synth.triggerAttackRelease(['E4', 'G4', 'B4'], '2n');
+            
+            setTimeout(() => btn.classList.remove('playing'), 1000);
+        }
+
+        function playRadioStatic() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const noise = new Tone.Noise('white').toDestination();
+            const filter = new Tone.Filter(4000, 'highpass').toDestination();
+            noise.connect(filter);
+            noise.volume.value = -15;
+            
+            noise.start();
+            setTimeout(() => {
+                noise.stop();
+                btn.classList.remove('playing');
+            }, 800);
+        }
+
+        function playRadioTuning() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const noise = new Tone.Noise('white').toDestination();
+            const synth = new Tone.Synth().toDestination();
+            const filter = new Tone.Filter(500, 'bandpass').toDestination();
+            
+            noise.connect(filter);
+            noise.volume.value = -20;
+            
+            noise.start();
+            filter.frequency.rampTo(2000, 1.5);
+            
+            setTimeout(() => {
+                synth.triggerAttackRelease('A4', '4n');
+                noise.stop();
+            }, 1000);
+            
+            setTimeout(() => btn.classList.remove('playing'), 1500);
+        }
+
+        function playFinalSymphony() {
+            startAudioContext();
+            const btn = event.target;
+            btn.classList.add('playing');
+            
+            const synth1 = new Tone.PolySynth().toDestination();
+            const synth2 = new Tone.FMSynth().toDestination();
+            const noise = new Tone.Noise('pink').toDestination();
+            const reverb = new Tone.Reverb(2).toDestination();
+            
+            synth1.connect(reverb);
+            synth2.connect(reverb);
+            noise.volume.value = -30;
+            
+            noise.start();
+            
+            // Layered composition
+            synth1.triggerAttackRelease(['C3', 'E3', 'G3'], '1n', Tone.now());
+            setTimeout(() => synth2.triggerAttackRelease('C5', '4n'), 500);
+            setTimeout(() => synth1.triggerAttackRelease(['D3', 'F3', 'A3'], '2n'), 1000);
+            setTimeout(() => synth2.triggerAttackRelease('E5', '4n'), 1500);
+            setTimeout(() => synth1.triggerAttackRelease(['C3', 'E3', 'G3', 'C4'], '1n'), 2000);
+            
+            setTimeout(() => {
+                noise.stop();
+                btn.classList.remove('playing');
+            }, 3000);
+        }
+
+        // Layer activation with sound
+        function activateLayer(element, layerIndex) {
+            startAudioContext();
+            
+            document.querySelectorAll('.layer').forEach(l => l.style.background = 'rgba(255, 255, 255, 0.05)');
+            element.style.background = 'rgba(0, 212, 255, 0.2)';
+            
+            const synth = new Tone.Synth().toDestination();
+            const notes = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4'];
+            synth.triggerAttackRelease(notes[layerIndex], '8n');
+            
+            // Visual feedback
+            const viz = document.getElementById('layerViz');
+            viz.innerHTML = '';
+            const bars = 20;
+            for (let i = 0; i < bars; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'wave-bar';
+                bar.style.height = Math.random() * (layerIndex + 1) * 20 + 10 + 'px';
+                viz.appendChild(bar);
+            }
+        }
+
+        // Navigation dots
+        const sections = ['intro', 'entities', 'morphisms', 'tensions', 'apparatuses', 'diagram', 'encoding', 'quotes', 'stakes', 'conclusion'];
+        const navDots = document.getElementById('navDots');
+        
+        sections.forEach((id, index) => {
+            const dot = document.createElement('div');
+            dot.className = 'nav-dot';
+            dot.onclick = () => {
+                document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+            };
+            navDots.appendChild(dot);
+        });
+
+        // Update active nav dot on scroll
+        window.addEventListener('scroll', () => {
+            const scrollPos = window.scrollY + 100;
+            sections.forEach((id, index) => {
+                const section = document.getElementById(id);
+                if (section.offsetTop <= scrollPos && section.offsetTop + section.offsetHeight > scrollPos) {
+                    document.querySelectorAll('.nav-dot').forEach(d => d.classList.remove('active'));
+                    document.querySelectorAll('.nav-dot')[index].classList.add('active');
+                }
+            });
+        });
+
+        // Initialize first waveform visualization
+        window.addEventListener('load', () => {
+            const viz = document.getElementById('layerViz');
+            for (let i = 0; i < 20; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'wave-bar';
+                bar.style.height = '20px';
+                viz.appendChild(bar);
+            }
+        });
+    </script>
+</body>
+</html>
