@@ -1,1 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="black">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Silence Has Rules — index</title>
+  <meta name="description" content="Silence Has Rules: Sound, Absence, and the Shape of Attention. Links to Cage, Sapir–Whorf, and Sterne pages." />
+  <meta name="theme-color" content="#0b0c10" />
+  <style>
+    /* =============================
+       THEMES (black / white / newspaper)
+       Toggle via <html data-theme="…">
+       ============================= */
+    :root{
+      --radius: 14px;
+      --gap: 16px;
+      --shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 20px 40px rgba(0,0,0,.45);
+    }
+    html[data-theme="black"]{
+      --bg: #0b0c10;
+      --panel: #0f1117;
+      --ink: #e9f0f6;
+      --muted: #9aa7b4;
+      --rule: rgba(255,255,255,.14);
+      --accent: #46e2c2;
+      --cover-bg: #0a0b10;
+    }
+    html[data-theme="white"]{
+      --bg: #ffffff;
+      --panel: #ffffff;
+      --ink: #0a0a0a;
+      --muted: #4b5563;
+      --rule: rgba(0,0,0,.14);
+      --accent: #111827;
+      --cover-bg: #f5f7fa;
+    }
+    html[data-theme="newspaper"]{
+      --bg: #f7f4ec;            /* newsprint */
+      --panel: #f7f4ec;
+      --ink: #151515;           /* ink black */
+      --muted: #5a5a5a;         /* grey column text */
+      --rule: rgba(20,20,20,.22);
+      --accent: #131313;        /* headings */
+      --cover-bg: #efe9db;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      line-height:1.45;
+    }
+
+    .wrap{max-width:1040px; margin:0 auto; padding:24px clamp(16px, 3.2vw, 40px) 56px;}
+
+    header{display:grid; gap:8px 16px; grid-template-columns:auto 1fr auto; align-items:end; border-bottom:1px solid var(--rule); padding-bottom:18px; margin-bottom:26px}
+
+    .mark{width:52px; height:52px; border:1px solid var(--rule); border-radius:12px; display:grid; place-items:center; background:var(--cover-bg)}
+    .mark svg{display:block}
+
+    h1{margin:0; font-weight:800; letter-spacing:.2px; line-height:1.08}
+    .subtitle{color:var(--muted); font-size:.98rem}
+
+    .meta{display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center; margin-top:6px; color:var(--muted); font-size:.95rem}
+    .pill{border:1px solid var(--rule); border-radius:999px; padding:6px 10px}
+
+    .theme-switch{display:flex; gap:8px; align-items:center}
+    .theme-switch button{appearance:none; border:1px solid var(--rule); background:transparent; color:var(--ink); padding:8px 10px; border-radius:10px; cursor:pointer}
+    .theme-switch button[aria-pressed="true"]{outline:2px solid #7aa6ff; outline-offset:2px}
+
+    section{margin:28px 0}
+    .section-title{color:var(--muted); text-transform:uppercase; letter-spacing:.12em; font-size:.78rem; margin-bottom:8px}
+    .panel{background:var(--panel); border:1px solid var(--rule); border-radius:14px; padding:16px 16px}
+    .big{font-size:1.12rem}
+
+    /* =============================
+       ALBUM COVERS
+       ============================= */
+    .covers{display:grid; gap:var(--gap); grid-template-columns:1fr; margin-top:10px}
+    @media(min-width:700px){.covers{grid-template-columns:repeat(3, 1fr)}}
+
+    a.cover{
+      display:grid; grid-template-rows:1fr auto; aspect-ratio:1/1; text-decoration:none; color:var(--ink);
+      border:1px solid var(--rule); border-radius:var(--radius); overflow:hidden; background:var(--cover-bg); position:relative;
+    }
+    /* subtle halftone for newspaper theme */
+    html[data-theme="newspaper"] a.cover::before{
+      content:""; position:absolute; inset:0; opacity:.2; mix-blend-mode:multiply;
+      background-image: radial-gradient(#000 0.5px, transparent 0.6px);
+      background-size: 3px 3px;
+      pointer-events:none;
+    }
+    .cover__art{display:grid; place-items:center; padding:18px}
+    .cover__art .glyph{width:64%; max-width:280px}
+    .cover__meta{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 14px; border-top:1px solid var(--rule); background:linear-gradient(180deg, transparent, rgba(0,0,0,.03))}
+    .title{font-weight:800; letter-spacing:.02em}
+    .code{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New"; font-size:.95rem; color:var(--muted)}
+
+    /* =============================
+       FOOTER & PRINT
+       ============================= */
+    footer{margin-top:34px; border-top:1px solid var(--rule); padding-top:18px; color:var(--muted); font-size:.9rem}
+
+    @media print{
+      html{background:#fff}
+      html, body{color:#000}
+      html[data-theme]{--bg:#fff; --panel:#fff; --ink:#000; --muted:#333; --rule:#bbb; --cover-bg:#fff}
+      .theme-switch{display:none}
+    }
+
+    a:focus-visible, button:focus-visible{outline:2px solid #7aa6ff; outline-offset:2px; border-radius:10px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="mark" aria-hidden="true" title="Signal mark">
+        <svg width="26" height="26" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="11" cy="11" r="2" stroke="var(--accent)" stroke-width="1.5"/>
+          <circle cx="11" cy="11" r="6" stroke="var(--rule)" stroke-width="1"/>
+          <circle cx="11" cy="11" r="9" stroke="var(--rule)" stroke-width="1"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Silence Has Rules</h1>
+        <div class="subtitle">Sound, Absence, and the Shape of Attention</div>
+        <div class="meta" role="list">
+          <span class="pill" role="listitem">Thu 10/02</span>
+          <span class="pill" role="listitem">Core: Silence is a medium with laws structuring how we listen & belong.</span>
+        </div>
+      </div>
+      <div class="theme-switch" aria-label="Theme switch">
+        <button data-theme="black" aria-pressed="true">Black</button>
+        <button data-theme="white" aria-pressed="false">White</button>
+        <button data-theme="newspaper" aria-pressed="false">Newspaper</button>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-title">Key Question</div>
+      <div class="panel big">How do different media environments choreograph attention through sound and silence?</div>
+    </section>
+
+    <section>
+      <div class="section-title">Prompt</div>
+      <div class="panel big">
+        Analyze a media form/space (e.g., podcast episode, silent film, livestream, game lobby, museum room, subway platform) for how it uses
+        <strong>sound</strong> and <strong>silence</strong> to guide perception, attention, and connection.
+        Draw explicitly on <em>John Cage</em> and <em>Jonathan Sterne</em>. Optional: relate to linguistic framing via Sapir–Whorf.
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">Modules (Album Covers)</div>
+      <div class="covers" role="list">
+        <!-- CAGE -->
+        <a class="cover" role="listitem" href="./cage.html" aria-label="Open cage.html: John Cage — Silence as Frame">
+          <div class="cover__art">
+            <svg class="glyph" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect x="8" y="8" width="104" height="104" rx="10" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <line x1="8" y1="60" x2="112" y2="60" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 6"/>
+            </svg>
+          </div>
+          <div class="cover__meta">
+            <div class="title">CAGE</div>
+            <div class="code">cage.html</div>
+          </div>
+        </a>
+
+        <!-- SAPIR–WHORF -->
+        <a class="cover" role="listitem" href="./sapir.html" aria-label="Open sapir.html: Sapir–Whorf — Relativity of Framing">
+          <div class="cover__art">
+            <svg class="glyph" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="60" cy="60" r="42" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <rect x="23" y="23" width="74" height="74" fill="none" stroke="var(--rule)" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="cover__meta">
+            <div class="title">SAPIR</div>
+            <div class="code">sapir.html</div>
+          </div>
+        </a>
+
+        <!-- STERNE -->
+        <a class="cover" role="listitem" href="./stern.html" aria-label="Open stern.html: Jonathan Sterne — The Audible Past">
+          <div class="cover__art">
+            <svg class="glyph" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M18 60 Q 38 30 60 60 T 102 60" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="60" cy="60" r="6" fill="none" stroke="var(--rule)" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="cover__meta">
+            <div class="title">STERNE</div>
+            <div class="code">stern.html</div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <footer>
+      <div>Press <strong>Black</strong>, <strong>White</strong>, or <strong>Newspaper</strong> for aesthetics. Print defaults to Newspaper. Keyboard: <kbd>Tab</kbd> to focus, <kbd>Enter</kbd> to follow links.</div>
+    </footer>
+  </div>
+
+  <script>
+    // Theme switching
+    const root = document.documentElement;
+    const themeBtns = document.querySelectorAll('.theme-switch button');
+    themeBtns.forEach(btn => btn.addEventListener('click', () => {
+      const theme = btn.dataset.theme;
+      document.documentElement.setAttribute('data-theme', theme);
+      themeBtns.forEach(b => b.setAttribute('aria-pressed', String(b===btn)));
+    }));
+  </script>
+</body>
+</html>
 
